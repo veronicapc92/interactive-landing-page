@@ -13,80 +13,83 @@
  *
  */
 
-/**
- * Define Global Variables
- *
- */
-
-/**
- * End Global Variables
- * Start Helper Functions
- *
- */
-
-/**
- * End Helper Functions
- * Begin Main Functions
- *
- */
-
-// build the nav
-
-// Add class 'active' to section when near top of viewport
-
-// Scroll to anchor ID using scrollTO event
-
-/**
- * End Main Functions
- * Begin Events
- *
- */
-
-// Build menu
-
-// Scroll to section on link click
-
-// Set sections as active
-
+/*** Global Variables ***/
 const navbarList = document.getElementById("navbar__list");
-const sectionContainers = document.getElementsByClassName("landing__container");
-const containersArray = Array.from(sectionContainers);
-
+const sections = document.querySelectorAll("[data-nav]");
+const sectionsArray = Array.from(sections);
 const fragment = document.createDocumentFragment();
 
-containersArray.forEach((container) => {
-  // Getting the text from the headings to use it as the text
-  // within the anchor element
-  const headingText = container.firstElementChild.textContent;
-  // Creating an id number dinamically
-  const id = containersArray.indexOf(container) + 1;
-
-  const anchorElement = createAnchorElement(id, headingText);
-  const listElement = createLiElement(id);
-
-  listElement.appendChild(anchorElement);
-  fragment.appendChild(listElement);
-});
-
-navbarList.appendChild(fragment);
-
-function smoothScrolling(e) {
-  e.preventDefault();
+/*** Helper Functions ***/
+function handleClickOnLink(e) {
   const section = document.getElementById(`section${e.target.id}`);
-  section.scrollIntoView({ behavior: "smooth" });
+  smoothScrolling(e, section);
 }
 
-function createAnchorElement(id, text) {
+function handleScrolling() {
+  sectionsArray.forEach((section) => {
+    switchActiveClass(section);
+  });
+}
+
+/*** Main Functions ***/
+
+// Building the nav
+function createAnchorElement(text, id) {
   const anchorElement = document.createElement("a");
   anchorElement.textContent = text;
   anchorElement.setAttribute("href", `#section${id}`);
   anchorElement.setAttribute("id", `${id}`);
-  anchorElement.addEventListener("click", (e) => smoothScrolling(e));
+  anchorElement.addEventListener("click", (e) => handleClickOnLink(e));
   return anchorElement;
 }
 
 function createLiElement(id) {
-  const listElement = document.createElement("li");
-  //   listElement.setAttribute("id", `li${id}`);
-  return listElement;
+  const liElement = document.createElement("li");
+  liElement.setAttribute("id", `li${id}`);
+  return liElement;
 }
+
+// Adding class 'active' to section when near top of viewport
+
+function switchActiveClass(section) {
+  const height = section.offsetHeight;
+  const breakpoint = 0.3 * height;
+  const distanceToTop = section.getBoundingClientRect().y;
+  const bottom = section.getBoundingClientRect().bottom;
+  const index = sectionsArray.indexOf(section);
+  const liElement = document.getElementById(`li${index + 1}`);
+
+  if (distanceToTop <= breakpoint && bottom >= breakpoint) {
+    section.classList.add("your-active-class");
+    liElement.classList.add("your-active-class");
+  } else {
+    section.classList.remove("your-active-class");
+    liElement.classList.remove("your-active-class");
+  }
+}
+
+// Scroll to anchor ID using scrollTO event
+function smoothScrolling(e, section) {
+  e.preventDefault();
+  section.scrollIntoView({ behavior: "smooth" });
+}
+
+/*** Begin Events */
+
+// Build menu
+sectionsArray.forEach((section) => {
+  const headingText = section.firstElementChild.firstElementChild.textContent;
+  const id = sectionsArray.indexOf(section) + 1;
+  const anchorElement = createAnchorElement(headingText, id);
+  const liElement = createLiElement(id);
+
+  liElement.appendChild(anchorElement);
+  fragment.appendChild(liElement);
+});
+
+navbarList.appendChild(fragment);
+
+// Scroll to section on link click
+
+// Set sections as active
+document.addEventListener("scroll", handleScrolling);

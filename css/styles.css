@@ -47,6 +47,12 @@ p {
   color: #eee;
 }
 
+/* Adding my styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* ---- Layout Rules ---- */
 main {
   margin: 10vh 1em 10vh;
@@ -74,8 +80,14 @@ section {
 .navbar__menu li {
   display: inline-block;
   /* Adding my styles */
-  color: black;
   padding: 15px;
+  color: black;
+}
+
+/* Adding my styles */
+.navbar__menu li.your-active-class {
+  background-color: black;
+  color: white;
 }
 
 .navbar__menu .menu__link {
