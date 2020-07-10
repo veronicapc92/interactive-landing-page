@@ -16,17 +16,22 @@
 /*** Global Variables ***/
 const navbarList = document.getElementById("navbar__list");
 const sections = document.querySelectorAll("[data-nav]");
-const sectionsArray = Array.from(sections);
 const fragment = document.createDocumentFragment();
 
-/*** Helper Functions ***/
+/*** Callback Functions ***/
+
+// Handles click events on the anchor elements and responds
+// by scrolling to anchor ID
 function handleClickOnLink(e) {
-  const section = document.getElementById(`section${e.target.id}`);
+  const section = document.getElementById(`${e.target.hash.replace("#", "")}`);
   smoothScrolling(e, section);
 }
 
+// Handles scroll events on the document and responds by looping through all the sections and:
+// - adding the "active" class to a section when the section is near the top of the viewport
+// - removing the class as the section leaves the viewport
 function handleScrolling() {
-  sectionsArray.forEach((section) => {
+  sections.forEach((section) => {
     switchActiveClass(section);
   });
 }
@@ -34,30 +39,39 @@ function handleScrolling() {
 /*** Main Functions ***/
 
 // Building the nav
-function createAnchorElement(text, id) {
+
+// Creates the anchor element and attaches an event listner to it
+function createAnchorElement(section) {
+  const textFromHeading =
+    section.firstElementChild.firstElementChild.textContent;
   const anchorElement = document.createElement("a");
-  anchorElement.textContent = text;
-  anchorElement.setAttribute("href", `#section${id}`);
-  anchorElement.setAttribute("id", `${id}`);
+  anchorElement.textContent = textFromHeading;
+  anchorElement.setAttribute("href", `#${section.id}`);
   anchorElement.addEventListener("click", (e) => handleClickOnLink(e));
   return anchorElement;
 }
 
-function createLiElement(id) {
+// Creates the li element
+function createLiElement(section) {
   const liElement = document.createElement("li");
-  liElement.setAttribute("id", `li${id}`);
+  liElement.setAttribute("id", `li-${section.id}`);
   return liElement;
 }
 
-// Adding class 'active' to section when near top of viewport
+// Adding class "active" to section when near top of viewport
 
 function switchActiveClass(section) {
+  // Explanation of the first 4 variables defined below:
+  // 1. Height of the element
+  // 2. Point at which the "active" class will be added to the section.
+  // 3. Distance from the top of the element to the top of the viewport
+  // 4. Distance from the bottom of the element to the top of the viewport
   const height = section.offsetHeight;
   const breakpoint = 0.3 * height;
   const distanceToTop = section.getBoundingClientRect().y;
   const bottom = section.getBoundingClientRect().bottom;
-  const index = sectionsArray.indexOf(section);
-  const liElement = document.getElementById(`li${index + 1}`);
+
+  const liElement = document.getElementById(`li-${section.id}`);
 
   if (distanceToTop <= breakpoint && bottom >= breakpoint) {
     section.classList.add("your-active-class");
@@ -68,28 +82,24 @@ function switchActiveClass(section) {
   }
 }
 
-// Scroll to anchor ID using scrollTO event
+// Scroll to anchor ID
 function smoothScrolling(e, section) {
   e.preventDefault();
   section.scrollIntoView({ behavior: "smooth" });
 }
 
-/*** Begin Events */
+/*** End of main functions ***/
 
 // Build menu
-sectionsArray.forEach((section) => {
-  const headingText = section.firstElementChild.firstElementChild.textContent;
-  const id = sectionsArray.indexOf(section) + 1;
-  const anchorElement = createAnchorElement(headingText, id);
-  const liElement = createLiElement(id);
+sections.forEach((section) => {
+  const anchorElement = createAnchorElement(section);
+  const liElement = createLiElement(section);
 
   liElement.appendChild(anchorElement);
   fragment.appendChild(liElement);
 });
 
 navbarList.appendChild(fragment);
-
-// Scroll to section on link click
 
 // Set sections as active
 document.addEventListener("scroll", handleScrolling);
