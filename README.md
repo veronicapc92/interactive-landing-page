@@ -9,7 +9,7 @@ The starter code (CSS & HTML) has been provided by Udacity, although I have slig
 
 The aim of this project is to test our DOM manipulation skills. I had to:
 
-- Pogrammatically builds navigation,
+- Pogrammatically build navigation,
 - Scroll to anchors from navigation,
 - Highlight section in viewport upon scrolling.
 
